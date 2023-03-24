@@ -1,0 +1,11 @@
+{
+  "name": "matters-autoclap",
+  "version": "1.0.0",
+  "description": "Automatically clap for Matters.news articles",
+  "main": "index.js",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "graphql": "^16.6.0",
+    "graphql-request": "^3.5.0"
+  }
+}
