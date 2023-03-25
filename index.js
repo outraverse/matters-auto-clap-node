@@ -58,7 +58,7 @@ async function userLogout() {
 /***
  * Retrive the total count of following users of a selected author
  */
-async function FetchTotalCountFollowing(userName) {
+async function fetchTotalCountFollowing(userName) {
   let totalCount = -1;
   const query = gql`
     query {
@@ -93,7 +93,7 @@ async function fetchFirstArticle(userName) {
   const query = gql`
     query {
       user(input: { userName: "${userName}" }) {
-        articles(input: { first: 1 }) {
+        articles(input: { first: 10 }) {
           edges {
             node {
               id
@@ -112,10 +112,17 @@ async function fetchFirstArticle(userName) {
   };
   try {
     const data = await client.request(query, variables);
-    const article = data.user.articles.edges[0];
+    const edges = data.user.articles.edges;
+    // sort articles in desending order by createdAt
+    const sortedEdges = edges.sort((a, b) => {
+      const aCreatedAt = new Date(a.node.createdAt);
+      const bCreatedAt = new Date(b.node.createdAt);
+      return bCreatedAt - aCreatedAt;
+    });
+    const article = sortedEdges[0];
     if (typeof article !== "undefined") {
       if (article.node.state === "active") {
-        console.log(article.node)
+        console.log(`Fetching article "${article.node.title}"...`)
         checkAppreciation(article.node.mediaHash, null, false)
       }
     }
@@ -180,7 +187,7 @@ async function checkAppreciation(mediaHash, after, clapped) {
         }
       }
       else {
-        console.log(`Article "${data.article.title}" has already been clapped.`)
+        //console.log(`The article "${data.article.title}" has already been upvoted.`)
       }
     }
     else {
@@ -195,7 +202,7 @@ async function checkAppreciation(mediaHash, after, clapped) {
 /***
  * retrieve all followers' names from selected author
  */
-async function FetchFollowingUsers(userName, first) {
+async function fetchFollowingUsers(userName, first) {
   let users = [];
   // Set up the query
   const query = gql`
@@ -257,8 +264,7 @@ async function sendAppriciation(articleId) {
   // Call the query using the client
   try {
     const data = await client.request(query, variables);
-    console.log(data)
-    console.log(`You have just clapped the article "${data.appreciateArticle.title}" 5 times.`)
+    console.log(`You upvoted the article "${data.appreciateArticle.title}" 5 times.`)
   }
   catch (error) {
     console.error(error);
@@ -278,16 +284,16 @@ async function main() {
   client.setHeader("x-access-token", token)
   //console.log("Token: ", token)
   // Call the function with the desired parameters
-  const totalCount = await FetchTotalCountFollowing(userName);
+  const totalCount = await fetchTotalCountFollowing(userName);
   if (totalCount > 0) {
-    const users = await FetchFollowingUsers(userName, totalCount);
+    const users = await fetchFollowingUsers(userName, totalCount);
     console.log("Followings")
     console.log(users)
     console.log("Total followings: ", users.length)
     if (users.length > 0) {
       for (let i in users) {
         await fetchFirstArticle(users[i])
-        await sleep(5000)
+        await sleep(3000)
       }
     }
   }
