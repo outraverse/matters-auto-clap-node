@@ -258,7 +258,7 @@ async function sendAppriciation(articleId) {
   try {
     const data = await client.request(query, variables);
     console.log(data)
-    console.log(`You have just clapped the article "${data.appreciateArticle}" 5 times.`)
+    console.log(`You have just clapped the article "${data.appreciateArticle.title}" 5 times.`)
   }
   catch (error) {
     console.error(error);
