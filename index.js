@@ -123,6 +123,7 @@ async function fetchFirstArticle(userName) {
     if (typeof article !== "undefined") {
       if (article.node.state === "active") {
         console.log(`Fetching article "${article.node.title}"...`)
+        //console.log(article.node.mediaHash)
         checkAppreciation(article.node.mediaHash, null, false)
       }
     }
@@ -165,13 +166,13 @@ async function checkAppreciation(mediaHash, after, clapped) {
   try {
     const data = await client.request(query, variables);
     const pageInfo = data.article.appreciationsReceived.pageInfo
-    const edges = data.article.appreciationsReceived.edges[0];
+    const edges = data.article.appreciationsReceived.edges;
     const mineName = process.env.user
   
     // Read the data from edges array
     if (typeof edges !== "undefined") {
       for (let i in edges) {
-        if (edges[i].sender.userName === mineName) {
+        if (edges[i].node.sender.userName === mineName) {
           clapped = true
           break
         }
