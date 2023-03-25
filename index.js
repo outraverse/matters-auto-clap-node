@@ -126,7 +126,6 @@ async function fetchFirstArticle(userName) {
         checkAppreciation(article.node.mediaHash, null, false)
       }
     }
-    //console.log(article)
   }
   catch (error) {
     console.error(error);
@@ -187,7 +186,7 @@ async function checkAppreciation(mediaHash, after, clapped) {
         }
       }
       else {
-        //console.log(`The article "${data.article.title}" has already been upvoted.`)
+        console.log(`The article "${data.article.title}" has already been upvoted.`)
       }
     }
     else {
@@ -287,7 +286,7 @@ async function main() {
   const totalCount = await fetchTotalCountFollowing(userName);
   if (totalCount > 0) {
     const users = await fetchFollowingUsers(userName, totalCount);
-    console.log("Followings")
+    console.log("Following:")
     console.log(users)
     console.log("Total followings: ", users.length)
     if (users.length > 0) {
